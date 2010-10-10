@@ -18,9 +18,19 @@ var jsDump;
 		return o + '';
 	}
 	function join( pre, arr, post ){
-		var s = jsDump.separator(),
-			base = jsDump.indent(),
-			inner = jsDump.indent(1);
+		var s = jsDump.separator();
+		var base = jsDump.indent();
+		var inner = jsDump.indent(1);
+		if( arr.join )
+			arr = arr.join( ',' + s + inner );
+		if( !arr )
+			return pre + post;
+		return [ pre, inner + arr, base + post ].join(s);
+	}
+	function joinXX( pre, arr, post ){
+		var s = ' ';
+		var base = jsDump.indent();
+		var inner = jsDump.indent(1);
 		if( arr.join )
 			arr = arr.join( ',' + s + inner );
 		if( !arr )
@@ -36,12 +46,19 @@ var jsDump;
 		return join( '[', ret, ']' );
 	}
 	function arrayXX( arr ){
-		var i = arr.length, ret = Array(i);
+		var i = arr.length
+		var ret = Array(i);
 		this.up();
-		while( i-- )
+		var isAnyObjectInside = false;
+		while( i-- ){
+			if(this.typeOf(arr[i]) == 'object'){
+				isAnyObjectInside = true;
+			}
 			ret[i] = this.parse( arr[i] );
+		}
 		this.down();
-		return join( '[--', ret, '--]' );
+		output = isAnyObjectInside?join( '[', ret, ']' ):joinXX( '[', ret, ']' );
+		return output;
 	}
 	var reName = /^function (\w+)/;
 	
