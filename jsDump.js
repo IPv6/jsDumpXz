@@ -61,7 +61,7 @@ var jsDump;
 			}
 			ret[i] = this.parse( arr[i] );
 			if(this.typeOf(arr[i]) == 'number'){
-				ret[i] = this.lpad(ret[i],' ',5);
+				ret[i] = lpad(ret[i],' ',5);
 			}
 		}
 		this.down();
