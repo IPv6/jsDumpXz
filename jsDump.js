@@ -35,7 +35,14 @@ var jsDump;
 		this.down();
 		return join( '[', ret, ']' );
 	}
-	
+	function arrayXX( arr ){
+		var i = arr.length, ret = Array(i);
+		this.up();
+		while( i-- )
+			ret[i] = this.parse( arr[i] );
+		this.down();
+		return join( '[--', ret, '--]' );
+	}
 	var reName = /^function (\w+)/;
 	
 	jsDump = {
@@ -106,7 +113,7 @@ var jsDump;
 				ret = [ ret, this.parse( fn, 'functionArgs' ), '){'].join('');
 				return join( ret, this.parse(fn,'functionCode'), '}' );
 			},
-			array: array,
+			array: arrayXX,
 			nodelist: array,
 			arguments: array,
 			object:function( map ){
