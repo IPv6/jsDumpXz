@@ -27,10 +27,10 @@ var jsDump;
 			return pre + post;
 		return [ pre, inner + arr, base + post ].join(s);
 	}
-	function joinXX( pre, arr, post ){
+	function joinSl( pre, arr, post ){
 		var s = ' ';
-		var base = jsDump.indent();
-		var inner = jsDump.indent(1);
+		var base = ' ';//jsDump.indent();
+		var inner = ' ';//jsDump.indent(1);
 		if( arr.join )
 			arr = arr.join( ',' + s + inner );
 		if( !arr )
@@ -45,7 +45,7 @@ var jsDump;
 		this.down();
 		return join( '[', ret, ']' );
 	}
-	function arrayXX( arr ){
+	function arraySmr( arr ){
 		var i = arr.length
 		var ret = Array(i);
 		this.up();
@@ -57,7 +57,7 @@ var jsDump;
 			ret[i] = this.parse( arr[i] );
 		}
 		this.down();
-		output = isAnyObjectInside?join( '[', ret, ']' ):joinXX( '[', ret, ']' );
+		output = isAnyObjectInside?join( '[', ret, ']' ):joinSl( '[', ret, ']' );
 		return output;
 	}
 	var reName = /^function (\w+)/;
@@ -130,14 +130,16 @@ var jsDump;
 				ret = [ ret, this.parse( fn, 'functionArgs' ), '){'].join('');
 				return join( ret, this.parse(fn,'functionCode'), '}' );
 			},
-			array: arrayXX,
+			array: arraySmr,
 			nodelist: array,
 			arguments: array,
 			object:function( map ){
 				var ret = [ ];
 				this.up();
-				for( var key in map )
+				for( var key in map ){
 					ret.push( this.parse(key,'key') + ': ' + this.parse(map[key]) );
+				}
+				ret.sort();
 				this.down();
 				return join( '{', ret, '}' );
 			},
