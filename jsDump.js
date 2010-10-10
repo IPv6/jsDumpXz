@@ -30,12 +30,17 @@ var jsDump;
 	function joinSl( pre, arr, post ){
 		var s = ' ';
 		var base = ' ';//jsDump.indent();
-		var inner = ' ';//jsDump.indent(1);
+		var inner = '';//jsDump.indent(1);
 		if( arr.join )
 			arr = arr.join( ',' + s + inner );
 		if( !arr )
 			return pre + post;
 		return [ pre, inner + arr, base + post ].join(s);
+	}
+	function lpad(str, padString, length){
+		while (str.length < length)
+			str = padString + str;
+		return str;
 	}
 	function array( arr ){
 		var i = arr.length, ret = Array(i);
@@ -55,6 +60,9 @@ var jsDump;
 				isAnyObjectInside = true;
 			}
 			ret[i] = this.parse( arr[i] );
+			if(this.typeOf(arr[i]) == 'number'){
+				ret[i] = this.lpad(ret[i],' ',5);
+			}
 		}
 		this.down();
 		output = isAnyObjectInside?join( '[', ret, ']' ):joinSl( '[', ret, ']' );
@@ -178,7 +186,7 @@ var jsDump;
 			'class':'className'
 		},
 		HTML:false,//if true, entities are escaped ( <, >, \t, space and \n )
-		indentChar:'   ',//indentation unit
+		indentChar:'\t',//indentation unit
 		multiline:true //if true, items in a collection, are separated by a \n, else just a space.
 	};
 
