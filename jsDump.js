@@ -106,7 +106,7 @@ var jsDump;
 				type;
 		},
 		separator:function(){
-			return this.multiline ? (this.HTML ? '<br />' : '\n' : this.HTML ? '&nbsp;') : ' ';
+			return this.multiline ? (this.HTML ? '<br />' : '\n') : (this.HTML ? '&nbsp;' : ' ');
 		},
 		indent:function( extra ){// extra can be a number, shortcut for increasing-calling-decreasing
 			if( !this.multiline )
