@@ -153,15 +153,20 @@ var jsDump;
 			object:function( map ){
 				var ret = [ ];
 				this.up();
-				for( var key in map ){
-					var prev_mml = this.multiline;
-					if(this.multiline_ignoreOnKeys != null && this.multiline_ignoreOnKeys.indexOf(key) >= 0){
-						this.multiline = false;
+				var prev_mml = this.multiline;
+				if(this.multiline_ignoreIfKeyInList != null){
+					for( var key in map ){
+						if(this.multiline_ignoreIfKeyInList.indexOf(key) >= 0){
+							this.multiline = false;
+							break;
+						}
 					}
+				}
+				for( var key in map ){
 					var obj_line = this.parse(key,'key') + ': ' + this.parse(map[key]);
-					this.multiline = prev_mml;
 					ret.push( obj_line );
 				}
+				this.multiline = prev_mml;
 				ret.sort();
 				this.down();
 				return join( '{', ret, '}' );
@@ -202,9 +207,9 @@ var jsDump;
 		},
 		HTML:false,//if true, entities are escaped ( <, >, \t, space and \n )
 		indentChar:'\t',//indentation unit
-		multiline:true, //if true, items in a collection, are separated by a \n, else just a space.
 		quote_forCPP: false, // Mask \n \t
-		multiline_ignoreOnKeys: null // Keys under this name should be placed in one line (ignoring multiline options)
+		multiline:true, //if true, items in a collection, are separated by a \n, else just a space.
+		multiline_ignoreIfKeyInList: null // Objects with keys from this list should be placed in single-lined always (ignoring multiline options)
 	};
 
 })();
