@@ -166,10 +166,11 @@ var jsDump;
 					var obj_line = this.parse(key,'key') + ': ' + this.parse(map[key]);
 					ret.push( obj_line );
 				}
-				this.multiline = prev_mml;
 				ret.sort();
 				this.down();
-				return join( '{', ret, '}' );
+				var out = join( '{', ret, '}' );
+				this.multiline = prev_mml;
+				return out;
 			},
 			node:function( node ){
 				var open = this.HTML ? '&lt;' : '<',
