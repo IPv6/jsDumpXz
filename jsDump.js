@@ -12,7 +12,13 @@ var jsDump;
 
 (function(){
 	function quote( str ){
-		return '"' + str.toString().replace(/"/g, '\\"') + '"';
+		var prestring = str.toString().replace(/"/g, '\\"');
+		if(jsDump.quote_forCPP){
+			prestring = prestring.replace(/\\/g, '\\');
+			prestring = prestring.replace(/\n/g, '\\n');
+			prestring = prestring.replace(/\t/g, '\\t');
+		}
+		return '"' + prestring + '"';
 	}
 	function literal( o ){
 		return o + '';
@@ -21,20 +27,24 @@ var jsDump;
 		var s = jsDump.separator();
 		var base = jsDump.indent();
 		var inner = jsDump.indent(1);
-		if( arr.join )
+		if( arr.join ){
 			arr = arr.join( ',' + s + inner );
-		if( !arr )
+		}
+		if( !arr ){
 			return pre + post;
+		}
 		return [ pre, inner + arr, base + post ].join(s);
 	}
 	function joinSl( pre, arr, post ){
 		var s = ' ';
 		var base = ' ';//jsDump.indent();
 		var inner = '';//jsDump.indent(1);
-		if( arr.join )
+		if( arr.join ){
 			arr = arr.join( ',' + s + inner );
-		if( !arr )
+		}
+		if( !arr ){
 			return pre + post;
+		}
 		return [ pre, inner + arr, base + post ].join(s);
 	}
 	function lpad(str, padString, length){
@@ -69,7 +79,6 @@ var jsDump;
 		return output;
 	}
 	var reName = /^function (\w+)/;
-	
 	jsDump = {
 		parse:function( obj, type ){//type is used mostly internally, you can fix a (custom)type in advance
 			var parser = this.parsers[ type || this.typeOf(obj) ];
@@ -97,7 +106,7 @@ var jsDump;
 				type;
 		},
 		separator:function(){
-			return this.multiline ? this.HTML ? '<br />' : '\n' : this.HTML ? '&nbsp;' : ' ';
+			return this.multiline ? (this.HTML ? '<br />' : '\n' : this.HTML ? '&nbsp;') : ' ';
 		},
 		indent:function( extra ){// extra can be a number, shortcut for increasing-calling-decreasing
 			if( !this.multiline )
@@ -145,7 +154,13 @@ var jsDump;
 				var ret = [ ];
 				this.up();
 				for( var key in map ){
-					ret.push( this.parse(key,'key') + ': ' + this.parse(map[key]) );
+					var prev_mml = this.multiline;
+					if(this.multiline_ignoreOnKeys != null && this.multiline_ignoreOnKeys.indexOf(key) >= 0){
+						this.multiline = false;
+					}
+					var obj_line = this.parse(key,'key') + ': ' + this.parse(map[key]);
+					this.multiline = prev_mml;
+					ret.push( obj_line );
 				}
 				ret.sort();
 				this.down();
@@ -187,7 +202,9 @@ var jsDump;
 		},
 		HTML:false,//if true, entities are escaped ( <, >, \t, space and \n )
 		indentChar:'\t',//indentation unit
-		multiline:true //if true, items in a collection, are separated by a \n, else just a space.
+		multiline:true, //if true, items in a collection, are separated by a \n, else just a space.
+		quote_forCPP: false, // Mask \n \t
+		multiline_ignoreOnKeys: null // Keys under this name should be placed in one line (ignoring multiline options)
 	};
 
 })();
